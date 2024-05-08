@@ -1,0 +1,5 @@
+load("raylib")
+require("colors.js")
+require("settings.js")
+require("Tutorial.js")
+require("map.js")
