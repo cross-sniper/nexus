@@ -1,21 +1,29 @@
 require("resource-manager.js")
-raylib.InitWindow( 800,600, "nexus")
+
+if(std.typeof(settings.window.width) === "number" && std.typeof(settings.window.height) === "number")
+{
+    raylib.InitWindow(settings.window.width,settings.window.height, "nexus")
+}else{
+    raylib.InitWindow(800,600, "nexus")
+}
+winSize = raylib.GetScreenSize()
+
 raylib.SetTargetFPS(settings.window.targetFps||60)
 
-spawn = getPlayerSpawn()
+spawn = {x:20,y:20}
 
 player = {
 	x:spawn.x,
 	y:spawn.y,
-	moveCooldown:0,
-	moveSpeed: settings.player.speed || 20
+	w:20,
+	h:20
 }
 
 cameraVars = {
     offsetX: 0,
     offsetY: 0,
-    targetX: 400,
-    targetY: 300,
+    targetX: 0,
+    targetY: 0,
     rotation: 0,
     zoom: settings.cam.zoom || 1
 }
@@ -29,87 +37,60 @@ function move(dt){
 		x:player.x,
 		y:player.y
 	}
-	moved = false
-	if(raylib.IsKeyDown(raylib.KEY_W) && player.moveCooldown <= 0){
-		nextPos.y -= 1
-		moved = true
+	if(raylib.IsKeyDown(raylib.KEY_W)){
+		nextPos.y -= Math.floor(200 * dt)
 	}
-	if(raylib.IsKeyDown(raylib.KEY_S) && player.moveCooldown <= 0){
-		nextPos.y += 1
-		moved = true
+	if(raylib.IsKeyDown(raylib.KEY_S)){
+		nextPos.y += Math.floor(200 * dt)
 	}
-	if(raylib.IsKeyDown(raylib.KEY_A) && player.moveCooldown <= 0){
-		nextPos.x -= 1
-		moved = true
+	if(raylib.IsKeyDown(raylib.KEY_A)){
+		nextPos.x -= Math.floor(200 * dt)
 	}
-	if(raylib.IsKeyDown(raylib.KEY_D) && player.moveCooldown <= 0){
-		nextPos.x += 1
-		moved = true
+	if(raylib.IsKeyDown(raylib.KEY_D)){
+		nextPos.x += Math.floor(200 * dt)
 	}
-	if(moved){
-		player.moveCooldown = 1
-	}
-
-	if(!isGoingToCollide({x:nextPos.x, y:player.y}))
-	{
+	
+	if(!(colide = checkCollision({x:nextPos.x,y:player.y}))){
 		player.x = nextPos.x
 	}
-	if(!isGoingToCollide({x:player.x, y:nextPos.y})){
+	if(!(colide = checkCollision({y:nextPos.y,x:player.x}))){
 		player.y = nextPos.y
 	}
-	changeLevel(player)
-	if(player.moveCooldown > 0){
-		player.moveCooldown -= player.moveSpeed * dt
-	}
-
+	handleDoors(player)
 }
 
 
 while (!raylib.WindowShouldClose()) {
-    // Update camera target
-
-    // Move player
 
     // Begin drawing
     raylib.BeginDrawing();
     raylib.ClearBackground(BLACK);
-    move(raylib.GetFrameTime());
+    dt = raylib.GetFrameTime()
+    move(dt);
     raylib.updateCameraOffset(
     	{
-    		x:400,
-    		y:300,
+    		x:winSize.width / 2,
+    		y:winSize.height / 2,
     	}
     )
     raylib.updateCameraTarget(
     	{
-    		x:player.x * 40,
-    		y:player.y * 40,
+    		x:player.x,
+    		y:player.y,
     	}
     );
-
-    // Begin rendering with the camera
     raylib.BeginCam();
-
-    // Draw map
-    drawMap();
-
+	drawMap()
     // Draw player
-    if(settings.tiles.drawTileGrid){
-	    raylib.DrawRectangle(player.x * 40, player.y * 40, 39, 39, (settings.player.Color || BLUE));
-    }else{
-	    raylib.DrawRectangle(player.x * 40, player.y * 40, 40, 40, (settings.player.Color || BLUE));
-    }
-	renderTutorials(currentMap)
+    raylib.DrawRectangle(player.x, player.y, player.w, player.h, (settings.player.Color || BLUE));
 
     // End rendering with the camera
     raylib.EndCam();
     // Draw debug information
     if (settings.debug) {
-		raylib.DrawFPS(0,0)
-        raylib.DrawText("moveCooldown: " + player.moveCooldown, 0, 20, 20, BLUE);
-        raylib.DrawText("current map: " + currentMap, 0, 40, 20, BLUE);
-        raylib.DrawText("pos: x:" + player.x + ", y:"+player.y, 0, 60, 20, BLUE);
-        raylib.DrawText("game pos: x:" + player.x*40 + ", y:"+player.y*40, 0, 80, 20, BLUE);
+        raylib.DrawFPS(0,0)
+        raylib.DrawText("pos: x:" + player.x + ", y:"+player.y, 0, 20, 20, BLUE);
+        raylib.DrawText("game pos: x:" + player.x + ", y:"+player.y, 0, 40, 20, BLUE);
     }
 
     // End drawing

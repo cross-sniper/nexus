@@ -31,7 +31,7 @@ const WHITE = {
 	b:255,
 	a:255
 }
-const DARKGRAY = {
+const DARKGREY = {
 	r:100,
 	g:100,
 	b:100,
