@@ -10,7 +10,7 @@ winSize = raylib.GetScreenSize()
 
 raylib.SetTargetFPS(settings.window.targetFps||60)
 
-spawn = {x:20,y:20}
+spawn = {x:40,y:20}
 
 player = {
 	x:spawn.x,
@@ -87,10 +87,10 @@ while (!raylib.WindowShouldClose()) {
     // End rendering with the camera
     raylib.EndCam();
     // Draw debug information
+    raylib.DrawText("room id: "+playerCurrentPosition,0,0, 20, WHITE)
     if (settings.debug) {
-        raylib.DrawFPS(0,0)
-        raylib.DrawText("pos: x:" + player.x + ", y:"+player.y, 0, 20, 20, BLUE);
-        raylib.DrawText("game pos: x:" + player.x + ", y:"+player.y, 0, 40, 20, BLUE);
+        raylib.DrawFPS(0,20)
+        raylib.DrawText("pos: x:" + player.x + ", y:"+player.y, 0, 40, 20, WHITE);
     }
 
     // End drawing

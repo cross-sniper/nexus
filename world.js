@@ -6,42 +6,32 @@ const Types = {
 
 const map = {
   1: [
-    { type: Types.Bg, x: 0, y: 0, w: 600, h: 300, color: DARKGREY },
-    { type: Types.Wall, x: 0, y: 0, w: 600, h: 20, color: RED },
-    { type: Types.Wall, x: 0, y: 0, w: 20, h: 300, color: RED },
-    { type: Types.Wall, x: 580, y: 0, w: 20, h: 300, color: RED },
-    { type: Types.Wall, x: 0, y: 300, w: 600, h: 20, color: RED },
-    {
-      type: Types.Door,
-      x: 20,
-      y: 20,
-      w: 20,
-      h: 20,
-      color: GREEN,
-      leads: 2,
-      entrance: { x: 500, y: 40 },
-    },
+    Bg(0, 0, 600, 200, DARKGREY),
+    Wall(0,0,600,20,RED),
+    Wall(0, 0,20,200,RED),
+    Wall(580,0,20,200,RED ),
+    Wall(0, 200, 600, 20, RED ),
+    Door(560,20,20,20,GREEN, 2, Vec2(40,40))
   ],
   2: [
-    { type: Types.Bg, x: 0, y: 0, w: 600, h: 300, color: DARKGREY },
-    { type: Types.Wall, x: 0, y: 0, w: 600, h: 20, color: RED },
-    { type: Types.Wall, x: 0, y: 0, w: 20, h: 300, color: RED },
-    { type: Types.Wall, x: 580, y: 0, w: 20, h: 300, color: RED },
-    { type: Types.Wall, x: 0, y: 300, w: 600, h: 20, color: RED },
-    {
-      type: Types.Door,
-      x: 500,
-      y: 20,
-      w: 20,
-      h: 20,
-      color: GREEN,
-      leads: 1,
-      entrance: { x: 50, y: 20 },
-    },
+    Bg(0, 0, 600, 100, DARKGREY),
+    Bg(540, 0, 60, 400, DARKGREY),
+    Wall(0,0,600,20,RED),
+    Wall(0, 0,20,100,RED),
+    Wall(600,0,20,400,RED ),
+    Wall(540,100,20,300,RED ),
+    Wall(0, 100, 540, 20, RED ),
+    Wall(540,400,80,20,RED),
+    Door(20,20,20,20,GREEN, 2, Vec2(40,40)),
+    Door(560,380,20,20,GREEN, 3, Vec2(40,40))
   ],
+  3: [
+    Bg(0, 0, 600, 100, DARKGREY),
+    // TODO: map level 3
+  ]
 };
 
-var playerCurrentPosition = 2;
+var playerCurrentPosition = 1;
 
 function DrawTile(tile) {
   raylib.DrawRectangle(tile.x, tile.y, tile.w, tile.h, tile.color);
@@ -50,7 +40,7 @@ function DrawTile(tile) {
 function drawMap() {
   const tiles = map[playerCurrentPosition];
   if (!tiles) {
-    console.error("Error: Undefined map for player position");
+    print("Error: Undefined map for player position");
     return;
   }
   for (var i = 0; i < tiles.length; i++) {
@@ -62,7 +52,7 @@ function drawMap() {
 function handleDoors(pos) {
   const tiles = map[playerCurrentPosition];
   if (!tiles) {
-    console.error("Error: Undefined map for player position");
+    print("Error: Undefined map for player position");
     return;
   }
   for (var i = 0; i < tiles.length; i++) {
@@ -87,7 +77,7 @@ function handleDoors(pos) {
 function checkCollision(pos) {
   const tiles = map[playerCurrentPosition];
   if (!tiles) {
-    console.error("Error: Undefined map for player position");
+    print("Error: Undefined map for player position");
     return null;
   }
   for (var i = 0; i < tiles.length; i++) {
